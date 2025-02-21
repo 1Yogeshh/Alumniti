@@ -9,13 +9,13 @@ function Register() {
   const [college, setCollege] = useState("");
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState("");
-
+  const apiUrl = process.env.REACT_APP_API_URL;
   const handleRegister = async (e) => {
     e.preventDefault();
     setMessage("");
 
     try {
-      const res = await axios.post("https://alumniti-server.vercel.app/api/auth/signup", {
+      const res = await axios.post(apiUrl + "/api/auth/signup", {
         name,
         email,
         password,
@@ -36,25 +36,21 @@ function Register() {
       <div className="bg-black h-screen w-1/4 flex items-center  justify-center">
         <div className="animate-slideIn rotate-180">
           <p className="text-9xl font-extrabold tracking-wide  bg-gradient-to-b from-white via-white to-black text-transparent bg-clip-text transform -rotate-90">
-          Alum<span className="text-8xl text-blue-700">नीति</span>
+            Alum<span className="text-8xl text-blue-700">नीति</span>
           </p>
         </div>
       </div>
 
       <div className="justify-center items-center flex flex-col bg-white h-screen w-3/4 rounded-md">
         <div className="font-extrabold text-4xl">
-          <p>
-            Create your account
-          </p>
+          <p>Create your account</p>
         </div>
         <div className="mt-2 mb-2 font-medium text-zinc-500">
           <p>Please enter your details</p>
         </div>
         <form onSubmit={handleRegister}>
           <div className="font-medium">
-            <p className="mb-1 mt-2 text-base flex gap-2">
-              Name
-            </p>
+            <p className="mb-1 mt-2 text-base flex gap-2">Name</p>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -64,9 +60,7 @@ function Register() {
             ></input>
           </div>
           <div className="font-medium">
-            <p className="mb-1 mt-2 text-base flex gap-2">
-              Email Address
-            </p>
+            <p className="mb-1 mt-2 text-base flex gap-2">Email Address</p>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -87,9 +81,7 @@ function Register() {
             <option value="admin">Admin</option>
           </select>
           <div className="font-medium">
-            <p className="mb-1 mt-2 text-base flex gap-2">
-              College
-            </p>
+            <p className="mb-1 mt-2 text-base flex gap-2">College</p>
             <input
               value={college}
               onChange={(e) => setCollege(e.target.value)}
@@ -99,9 +91,7 @@ function Register() {
             ></input>
           </div>
           <div className="font-medium text-base">
-            <p className="mb-1 mt-2 flex gap-2">
-              Password
-            </p>
+            <p className="mb-1 mt-2 flex gap-2">Password</p>
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -122,7 +112,10 @@ function Register() {
         <div className="mt-4 font-medium">
           <p>
             You have already Account?{" "}
-            <a className=" underline text-blue-700 hover:cursor-pointer" href="/login">
+            <a
+              className=" underline text-blue-700 hover:cursor-pointer"
+              href="/login"
+            >
               Sign In
             </a>
           </p>

@@ -25,12 +25,13 @@ function UserProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          `https://alumniti-server.vercel.app/api/auth/otherprofile/${userId}`,
+          apiUrl + `/api/auth/otherprofile/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

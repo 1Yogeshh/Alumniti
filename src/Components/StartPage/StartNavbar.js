@@ -1,7 +1,8 @@
 import React from "react";
 import { Activity, Gem, Lightbulb, PenLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import logo from "../Assets/logo2.jpg";
+import logo from "../Assets/logo2.png";
+import { Link } from "react-router-dom";
 
 function StartNavbar() {
   const navigate = useNavigate();
@@ -21,28 +22,54 @@ function StartNavbar() {
     }
   };
 
+  const links = [
+    {
+      id: 0,
+      name: "Events",
+      path: "/events",
+    },
+    {
+      id: 1,
+      name: "Jobs",
+      path: "/home",
+    },
+    {
+      id: 2,
+      name: "Categories",
+      path: "/",
+    },
+  ];
+
   console.log(token);
 
   return (
     <div className="sticky top-0">
       <div className="flex justify-between bg-white h-[60px] items-center pl-10 pr-10 w-full">
-        <img src={logo} className="h-[150px] ml-4 mix-blend-multiply"></img>
+        <img
+          src={logo}
+          alt="logo"
+          className="h-[30px] ml-4 mix-blend-multiply"
+        ></img>
 
         <div className="mr-10 flex gap-8 justify-center items-center w-1/4">
           <div>
-            <li className="list-none flex gap-8 font-medium text-base">
-              <a className="hover:text-blue-700 text-[15px] hover:cursor-pointer hover:underline flex gap-2">
-                {" "}
-                Events
-              </a>
-              <a className="hover:text-blue-700 text-[15px] hover:cursor-pointer flex gap-2 hover:underline">
-                Jobs
-              </a>
-              <a className="hover:text-blue-700 text-[15px] hover:cursor-pointer flex gap-2 hover:underline">
-                {" "}
-                Categories
-              </a>
-            </li>
+            <ul className="list-none flex gap-8 font-medium text-base">
+              {/* <a className="hover:text-blue-700 text-[15px] hover:cursor-pointer hover:underline flex gap-2">
+                  {" "}
+                  Events
+                </a> */}
+              {links.map((item) => (
+                <li key={item.id} className="">
+                  <Link
+                    className="hover:text-blue-700 text-[15px] hover:cursor-pointer hover:underline flex gap-2"
+                    to={item.path}
+                  >
+                    {" "}
+                    {item.name}{" "}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
           {token ? (
             <button

@@ -10,11 +10,12 @@ import axios from "axios";
 
 function Connection() {
   const [users, setUsers] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("https://alumniti-server.vercel.app/api/auth/get-all-users", {
+        const response = await axios.get(apiUrl + "/api/auth/get-all-users", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`, // Include your token for authentication
           },
@@ -64,7 +65,9 @@ function Connection() {
                     <div className="font-bold mt-5 text-black text-lg">
                       {user.name}
                     </div>
-                    <div className="text-sm text-gray-600">{user.currentjob}</div>
+                    <div className="text-sm text-gray-600">
+                      {user.currentjob}
+                    </div>
                     <div className="text-sm text-gray-600">{user.college}</div>
                     <div className="text-sm text-gray-600">{user.role}</div>
                     <div className="text-sm text-gray-600">{user.location}</div>

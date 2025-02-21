@@ -8,20 +8,18 @@ import Sidebar from "../Sidebar/Sidebar";
 function Event() {
   const navigate = useNavigate();
   const [event, setEvent] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await axios.get(
-          "https://alumniti-server.vercel.app/api/auth/getevents",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Include token for authorization
-            },
-          }
-        );
+        const res = await axios.get(apiUrl + "/api/auth/getevents", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token for authorization
+          },
+        });
         setEvent(res.data);
       } catch (error) {
         console.log(error);

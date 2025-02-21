@@ -8,17 +8,16 @@ function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const apiUrl = process.env.REACT_APP_API_URL;
+  console.log(apiUrl);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "https://alumniti-server.vercel.app/api/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(apiUrl + "/api/auth/login", {
+        email,
+        password,
+      });
       const { token } = response.data;
       localStorage.setItem("token", token);
       // Navigate to the appropriate dashboard
@@ -38,9 +37,9 @@ function Login() {
     <div className="flex h-screen  bg-white">
       <div className="bg-black h-screen w-1/4 flex items-center  justify-center">
         <div className="animate-slideIn rotate-180">
-        <p className="text-9xl font-extrabold tracking-wide  bg-gradient-to-b from-white via-white to-black text-transparent bg-clip-text transform -rotate-90">
-        Alum<span className="text-8xl text-blue-700">नीति</span>
-        </p>
+          <p className="text-9xl font-extrabold tracking-wide  bg-gradient-to-b from-white via-white to-black text-transparent bg-clip-text transform -rotate-90">
+            Alum<span className="text-8xl text-blue-700">नीति</span>
+          </p>
         </div>
       </div>
 
@@ -87,7 +86,10 @@ function Login() {
         <div className="mt-4 font-medium">
           <p>
             Don't have an Account?{" "}
-            <a className=" underline text-blue-700 hover:cursor-pointer" href="/register">
+            <a
+              className=" underline text-blue-700 hover:cursor-pointer"
+              href="/register"
+            >
               Sign up
             </a>
           </p>

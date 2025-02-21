@@ -16,13 +16,14 @@ import { useNavigate } from "react-router-dom";
 function HeroJob() {
   const navigate = useNavigate();
   const [job, setJob] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const res = await axios.get("https://alumniti-server.vercel.app/api/auth/getjobs", {
+        const res = await axios.get(apiUrl + "/api/auth/getjobs", {
           headers: {
             Authorization: `Bearer ${token}`, // Include token for authorization
           },

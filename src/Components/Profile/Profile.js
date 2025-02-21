@@ -26,6 +26,7 @@ function Profile() {
   const isStudent = user?.role === "student";
   const isAlumni = user?.role === "alumni";
   const [profileData, setProfileData] = useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchProfileData();
@@ -38,7 +39,7 @@ function Profile() {
       const endpoint = isAdmin
         ? "/api/auth/profile"
         : "/api/auth/profile-alumni"; // Use profile-alumni if applicable
-      const res = await axios.get(`https://alumniti-server.vercel.app${endpoint}`, {
+      const res = await axios.get(apiUrl + `${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token for authorization
         },
@@ -46,7 +47,7 @@ function Profile() {
 
       setProfileData(res.data[0]);
       console.log(res.data[0]);
-       // Set the profile data based on the response
+      // Set the profile data based on the response
     } catch (err) {
       console.error(
         "Failed to fetch profile data:",
@@ -91,7 +92,9 @@ function Profile() {
 
             <div className="ml-[50px] flex gap-2 text-sm mt-2 text-gray-600 items-center">
               <MapPin size={18} className="text-black" />
-              <span className="font-medium">{ profileData ? profileData.location:"loading"}</span>
+              <span className="font-medium">
+                {profileData ? profileData.location : "loading"}
+              </span>
             </div>
 
             <div className="ml-[50px] text-sm mt-2 text-gray-700">
@@ -104,7 +107,8 @@ function Profile() {
                 onClick={() => navigate("/update")}
                 className="bg-gradient-to-r from-black to-black flex justify-center items-center gap-2 text-white py-2 px-4 rounded-lg  hover:shadow-lg transform hover:scale-105 transition-transform duration-300"
               >
-                <Pencil size={18}/>Edit 
+                <Pencil size={18} />
+                Edit
               </button>
 
               <a
