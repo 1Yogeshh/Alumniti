@@ -19,6 +19,7 @@
     "react-dropzone": "^14.2.9",
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "web-vitals": "^2.1.4"
