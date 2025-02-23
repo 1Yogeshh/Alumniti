@@ -23,9 +23,9 @@ function Login() {
       // Navigate to the appropriate dashboard
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
       if (decodedToken.role === "admin") {
-        navigate("/"); // Redirect to Admin Dashboard
+        navigate("/home"); // Redirect to Admin Dashboard
       } else if (decodedToken.role === "student") {
-        navigate("/"); // Redirect to Student Dashboard
+        navigate("/home"); // Redirect to Student Dashboard
       } else {
         navigate("/");
       }
