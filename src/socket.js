@@ -1,14 +1,13 @@
+// src/socket.js
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000"; // Change this when deploying
+// Retrieve the token from localStorage (or however you store it)
+// Ensure you have the token from login before connecting.
+const token = localStorage.getItem("token");
 
-const socket = io(SOCKET_URL, {
+const socket = io("http://localhost:5000", {
+  auth: { token },
   withCredentials: true,
-  transports: ["websocket"],
-});
-
-socket.on("connect", () => {
-  console.log("Connected to Socket.IO server:", socket.id);
 });
 
 export default socket;

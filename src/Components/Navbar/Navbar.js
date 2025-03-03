@@ -9,7 +9,7 @@ import axios from "axios";
 function Navbar() {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
-
+  console.log("navbar", apiUrl);
   // Function to add active class
   const getActiveClass = ({ isActive }) =>
     isActive ? "text-blue-700" : "text-black";

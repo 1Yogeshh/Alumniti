@@ -20,6 +20,8 @@ import AdminDashboard from "./Components/Dashboard/Admindashboard"; // Import Ad
 import { useEffect, useState } from "react";
 import Message from "./Components/Message/Message";
 import Test from "./Components/Test/Test";
+// Import the Chat component for Socket.IO messaging
+import Chat from "./Components/SocketChat/Chat";
 function App() {
   const [role, setRole] = useState(null);
 
@@ -113,6 +115,15 @@ function App() {
     {
       path: "/test",
       element: <Test />,
+    },
+    // New dedicated chat route for Socket.IO messaging
+    {
+      path: "/chat",
+      element: <Chat />,
+    },
+    {
+      path: "/chat/:recipientId",
+      element: <Chat />,
     },
   ]);
 

@@ -13,7 +13,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setMessage("");
-
+    console.log(apiUrl);
     try {
       const res = await axios.post(apiUrl + "/api/auth/signup", {
         name,
