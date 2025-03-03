@@ -193,32 +193,73 @@ const Chat = () => {
             <div className="flex-1 overflow-y-auto border p-4 mb-4 space-y-2">
               {messages.map((msg, index) => {
                 const isMe = msg.senderId === myId;
-                // For your own messages, use your profile image if available
                 const senderDetails = isMe
                   ? {
                       name: myUser?.name || "You",
                       img: myUser?.img || "/avatar.png",
                     }
                   : getSenderDetails(msg.senderId);
+
+                // Format the timestamp (assuming msg.timestamp is a valid date string)
+                const formattedTime = new Date(
+                  msg.timestamp
+                ).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
                 return (
-                  <div key={index} className="flex items-start gap-2">
-                    <div className="relative">
-                      <img
-                        src={getValidImgSrc(senderDetails.img)}
-                        alt={senderDetails.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      {!isMe && onlineUsers.includes(msg.senderId) && (
-                        <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-500"></span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-bold">{senderDetails.name}</p>
-                      <p>{msg.content}</p>
+                  <div
+                    key={index}
+                    className={`w-full flex ${
+                      isMe ? "justify-end" : "justify-start"
+                    } my-2`}
+                  >
+                    <div
+                      className={`flex items-start gap-2 max-w-xs ${
+                        isMe ? "flex-row-reverse" : ""
+                      }`}
+                    >
+                      <div className="relative">
+                        <img
+                          src={getValidImgSrc(senderDetails.img)}
+                          alt={senderDetails.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        {!isMe && onlineUsers.includes(msg.senderId) && (
+                          <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-500"></span>
+                        )}
+                      </div>
+                      <div>
+                        <p
+                          className={`font-bold ${
+                            isMe ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {senderDetails.name}
+                        </p>
+                        <div
+                          className={`p-2 rounded-lg ${
+                            isMe
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 text-black"
+                          }`}
+                        >
+                          <p>{msg.content}</p>
+                          <p
+                            className={`text-xs  text-right mt-1 ${
+                              isMe ? "text-gray-300" : "text-gray-500"
+                            }`}
+                          >
+                            {formattedTime}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
               })}
+
               {/* Typing skeleton */}
               {otherTyping && (
                 <div className="flex items-center gap-2">
