@@ -8,20 +8,27 @@ const Chat = () => {
 
   const [users, setUsers] = useState([]); // All users (same college except yourself)
   const [onlineUsers, setOnlineUsers] = useState([]); // List of online user IDs
-  const [messages, setMessages] = useState([]); // Chat messages between you and the recipient
+  const [messages, setMessages] = useState([]); // Chat messages between you and the recipient (active conversation)
+  const [allMessages, setAllMessages] = useState([]); // Global messages for the logged-in user (for sidebar sorting)
   const [content, setContent] = useState(""); // Message input field
   const [otherTyping, setOtherTyping] = useState(false); // Whether the other person is typing
   const [myId, setMyId] = useState(null); // Your own user ID (decoded from token)
   const [myUser, setMyUser] = useState(null); // Your own full profile (including image)
+
+  // Utility function to extract _id from an object or return the string if already a string
+  const extractId = (id) => {
+    return typeof id === "object" && id !== null ? id._id : id;
+  };
 
   // Decode token to get your user ID (Already exists)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
+        // Split token into parts and decode
         const parts = token.split(".");
         if (parts.length === 3) {
-          const decoded = JSON.parse(atob(parts[1]));
+          const decoded = JSON.parse(atob(parts[1])); // Decode token
           setMyId(decoded.userId);
         }
       } catch (error) {
@@ -59,14 +66,29 @@ const Chat = () => {
       .catch((err) => console.error("Error fetching users:", err));
   }, []);
 
-  // When a recipient is selected, fetch previous messages via socket event (Already exists)
+  // Fetch global messages for the logged-in user for sidebar sorting
+  useEffect(() => {
+    if (myId) {
+      fetch(`http://localhost:5000/api/auth/messages/${myId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => setAllMessages(data))
+        .catch((err) => console.error("Error fetching all messages:", err));
+    }
+  }, [myId]);
+
+  // When a recipient is selected, fetch previous messages via socket event (Active conversation)
   useEffect(() => {
     if (recipientId) {
       socket.emit("fetchMessages", { recipientId });
     }
   }, [recipientId]);
 
-  // Listen for socket events (Already exists)
+  // Listen for socket events (Active conversation, online users, typing indicators, etc.)
   useEffect(() => {
     socket.on("previousMessages", (msgs) => {
       setMessages(msgs);
@@ -74,6 +96,8 @@ const Chat = () => {
 
     socket.on("receiveMessage", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
+      // Also update global messages for sidebar sorting
+      setAllMessages((prev) => [...prev, message]);
     });
 
     socket.on("updateOnlineUsers", (onlineList) => {
@@ -121,7 +145,9 @@ const Chat = () => {
 
   // Helper: Get sender's details from users list (for messages not sent by you)
   const getSenderDetails = (senderId) => {
-    const user = users.find((u) => u._id === senderId);
+    const user = users.find(
+      (u) => u._id === senderId || u._id === extractId(senderId)
+    );
     return (
       user || {
         name: "Unknown",
@@ -135,31 +161,70 @@ const Chat = () => {
     return img && img.trim() !== "" ? img : "/avatar.png";
   };
 
+  // Helper: Get the latest conversation message between you and a given user from global messages.
+  const getLatestConversationMessage = (userId) => {
+    if (!myId) return null;
+    // Filter messages that are part of the conversation between myId and userId.
+    const conversation = allMessages.filter((msg) => {
+      const senderId = extractId(msg.senderId);
+      const recipientIdFromMsg = extractId(msg.recipientId);
+      return (
+        (senderId === userId && recipientIdFromMsg === myId) ||
+        (senderId === myId && recipientIdFromMsg === userId)
+      );
+    });
+    if (conversation.length === 0) return null;
+    // Sort conversation by timestamp descending (latest first)
+    conversation.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    return conversation[0];
+  };
+
+  // Sort users by the timestamp of the latest conversation message (most recent on top)
+  const sortedUsers = [...users].sort((a, b) => {
+    const msgA = getLatestConversationMessage(a._id);
+    const msgB = getLatestConversationMessage(b._id);
+    const timeA = msgA ? new Date(msgA.timestamp).getTime() : 0;
+    const timeB = msgB ? new Date(msgB.timestamp).getTime() : 0;
+    return timeB - timeA;
+  });
+
   return (
     <div className="flex h-screen">
       {/* Sidebar: List of users with online indicator */}
       <div className="w-1/4 border-r p-4">
         <h2 className="text-xl font-bold mb-4">Users</h2>
-        {users.length > 0 ? (
-          users.map((user) => (
-            <button
-              key={user._id}
-              className="btn btn-outline w-full mb-2 flex items-center gap-2"
-              onClick={() => navigate(`/chat/${user._id}`)}
-            >
-              <div className="relative">
-                <img
-                  src={getValidImgSrc(user.img)}
-                  alt={user.name || "Default avatar"}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                {onlineUsers.includes(user._id) && (
-                  <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-500"></span>
-                )}
-              </div>
-              <span>{user.name}</span>
-            </button>
-          ))
+        {sortedUsers.length > 0 ? (
+          sortedUsers.map((user) => {
+            const latestMsg = getLatestConversationMessage(user._id);
+            // Display "You:" prefix if you sent the last message
+            const preview = latestMsg
+              ? extractId(latestMsg.senderId) === myId
+                ? `You: ${latestMsg.content}`
+                : latestMsg.content
+              : "No messages yet";
+            return (
+              <button
+                key={user._id}
+                className="btn btn-outline w-full mb-2 flex items-center gap-2"
+                onClick={() => navigate(`/chat/${user._id}`)}
+              >
+                <div className="relative">
+                  <img
+                    src={getValidImgSrc(user.img)}
+                    alt={user.name || "Default avatar"}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  {onlineUsers.includes(user._id) && (
+                    <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-500"></span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <span>{user.name}</span>
+                  <p className="text-xs text-gray-500">{preview}</p>
+                </div>
+              </button>
+            );
+          })
         ) : (
           <p>No users found.</p>
         )}
@@ -192,7 +257,7 @@ const Chat = () => {
             </div>
             <div className="flex-1 overflow-y-auto border p-4 mb-4 space-y-2">
               {messages.map((msg, index) => {
-                const isMe = msg.senderId === myId;
+                const isMe = extractId(msg.senderId) === myId;
                 const senderDetails = isMe
                   ? {
                       name: myUser?.name || "You",
@@ -226,9 +291,10 @@ const Chat = () => {
                           alt={senderDetails.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />
-                        {!isMe && onlineUsers.includes(msg.senderId) && (
-                          <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-500"></span>
-                        )}
+                        {!isMe &&
+                          onlineUsers.includes(extractId(msg.senderId)) && (
+                            <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-500"></span>
+                          )}
                       </div>
                       <div>
                         <p
@@ -247,7 +313,7 @@ const Chat = () => {
                         >
                           <p>{msg.content}</p>
                           <p
-                            className={`text-xs  text-right mt-1 ${
+                            className={`text-xs text-right mt-1 ${
                               isMe ? "text-gray-300" : "text-gray-500"
                             }`}
                           >
