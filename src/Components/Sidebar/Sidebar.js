@@ -55,6 +55,18 @@ function Sidebar() {
           AI Mentor
         </NavLink>
       </div>
+
+      <div className="bg-zinc-200 mx-10 py-4 rounded-md">
+        <NavLink
+          to="/chat"
+          className={({ isActive }) =>
+            getActiveClass({ isActive, paths: ["/chat"] })
+          }
+        >
+          Messages
+        </NavLink>
+      </div>
+
       <div className="h-[1px] ml-[50px] bg-zinc-100 w-[200px]"></div>
       <div className="bg-zinc-200 mx-10 py-4 rounded-md">
         <NavLink
