@@ -6,7 +6,8 @@ export const Card = ({ title, description, illustration }) => {
       <motion.div
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className=" bg-[#9792AB]/20 shadow-md shadow-[#9792AB]/40 rounded-xl p-8 w-80 h-[460px] text-center transition-all duration-300 ease-in-out group-hover:shadow-xl absolute  pointer-events-none "
+        className=" bg-[#9792AB]/20
+         shadow-md shadow-[#9792AB]/40 rounded-xl p-8 w-80 h-[460px] text-center transition-all duration-300 ease-in-out group-hover:shadow-xl absolute  pointer-events-none "
       >
         <img
           src={illustration}

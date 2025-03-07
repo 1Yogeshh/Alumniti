@@ -5,6 +5,7 @@ import Navbar from "../Navbar/Navbar";
 const Chat = () => {
   const { recipientId } = useParams(); // Recipient ID from URL (if any)
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const [users, setUsers] = useState([]); // All users (same college except yourself)
   const [onlineUsers, setOnlineUsers] = useState([]); // List of online user IDs
@@ -40,7 +41,7 @@ const Chat = () => {
 
   // Fetch your own profile (Keep only one useEffect here)
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/profile-alumni", {
+    fetch(apiUrl + "/api/auth/profile-alumni", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -56,7 +57,7 @@ const Chat = () => {
 
   // Fetch all users from the same college (except yourself)
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/get-all-users", {
+    fetch(apiUrl + "/api/auth/get-all-users", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -70,7 +71,7 @@ const Chat = () => {
   // Fetch global messages for the logged-in user for sidebar sorting
   useEffect(() => {
     if (myId) {
-      fetch(`http://localhost:5000/api/auth/messages/${myId}`, {
+      fetch(apiUrl + `/api/auth/messages/${myId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

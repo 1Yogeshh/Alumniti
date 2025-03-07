@@ -13,21 +13,16 @@ function Connection() {
   const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(apiUrl + "/auth/get-all-users", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Include your token for authentication
-          },
-        });
-        setUsers(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchUsers();
+    fetch(apiUrl + "/api/auth/get-all-users", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((err) => console.error("Error fetching users:", err));
   }, []);
-
   return (
     <>
       <div className="bg-zinc-100 w-full">
